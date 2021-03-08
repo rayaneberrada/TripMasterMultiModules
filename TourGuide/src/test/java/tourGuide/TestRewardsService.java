@@ -22,10 +22,7 @@ import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
 import tourGuide.helper.InternalTestHelper;
-import tourGuide.service.CalculatorService;
-import tourGuide.service.GpsService;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
+import tourGuide.service.*;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
 
@@ -33,11 +30,11 @@ import tourGuide.user.UserReward;
 @ExtendWith(MockitoExtension.class)
 public class TestRewardsService {
 
-  @Mock
-  GpsService gpsService;
+  @Mock GpsService gpsService;
 
-  @Mock
-  CalculatorService calculatorService;
+  @Mock CalculatorService calculatorService;
+
+  @Mock TripPricerService tripPricerService;
 
   List<Attraction> attractions = new ArrayList();
 
@@ -70,7 +67,7 @@ public class TestRewardsService {
 
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     Attraction attraction = gpsService.getAllAttractions().get(0);
@@ -99,7 +96,7 @@ public class TestRewardsService {
 
     InternalTestHelper.setInternalUserNumber(1);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     rewardsService.setProximityBuffer(10000);
     rewardsService.calculateRewards(tourGuideService.getAllUsers().get(0));

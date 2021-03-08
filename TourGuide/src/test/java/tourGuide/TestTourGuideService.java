@@ -18,17 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rewardCentral.RewardCentral;
-import tourGuide.beans.Attraction;
-import tourGuide.beans.Location;
-import tourGuide.beans.VisitedLocation;
-import tourGuide.beans.NearByAttraction;
+import tourGuide.beans.*;
 import tourGuide.helper.InternalTestHelper;
-import tourGuide.service.CalculatorService;
-import tourGuide.service.GpsService;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
+import tourGuide.service.*;
 import tourGuide.user.User;
-import tripPricer.Provider;
 
 @RunWith(MockitoJUnitRunner.class)
 @ExtendWith(MockitoExtension.class)
@@ -40,13 +33,19 @@ public class TestTourGuideService {
   @Mock
   CalculatorService calculatorService;
 
+  @Mock
+  TripPricerService tripPricerService;
+
   User user;
   List<Attraction> attractions = new ArrayList();
+  List<Provider> providers = new ArrayList<>();
 
   @Before
   public void setUp() {
     user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     Locale.setDefault(new Locale("en", "US", "WIN"));
+
+    // Setting up mock attraction's list for test
     attractions.add(new Attraction("Flatiron Building", "New York City", "NY", 40.741112D, -73.989723D));
     attractions.add(new Attraction("Fallingwater", "Mill Run", "PA", 39.906113D, -79.468056D));
     attractions.add(new Attraction("Union Station", "Washington D.C.", "CA", 38.897095D, -77.006332D));
@@ -63,6 +62,18 @@ public class TestTourGuideService {
     attractions.add(new Attraction("Kansas City Zoo", "Kansas City", "MO", 39.007504D, -94.529625D));
     attractions.add(new Attraction("Bronx Zoo", "Bronx", "NY", 40.852905D, -73.872971D));
     attractions.add(new Attraction("Cinderella Castle", "Orlando", "FL", 28.419411D, -81.5812D));
+
+    // Setting up mock provider's list for test
+    providers.add(new Provider(UUID.randomUUID(), "Holiday Travels", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "Enterprize Ventures Limited", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "Sunny Days", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "FlyAway Trips", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "United Partners Vacations", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "Dream Trips", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "Live Free", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "ancing Waves Cruselines and Partners", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "AdventureCo", 100.00));
+    providers.add(new Provider(UUID.randomUUID(), "Cure-Your-Blues", 100.00));
   }
 
   @Test
@@ -72,7 +83,7 @@ public class TestTourGuideService {
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     // WHEN
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -88,7 +99,7 @@ public class TestTourGuideService {
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
@@ -113,7 +124,7 @@ public class TestTourGuideService {
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(100);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
@@ -138,7 +149,7 @@ public class TestTourGuideService {
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     // WHEN
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -157,7 +168,7 @@ public class TestTourGuideService {
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     // WHEN
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -172,10 +183,11 @@ public class TestTourGuideService {
   @Test
   public void getTripDeals() {
     // GIVEN
+    when(tripPricerService.getProvidersPrice(any(String.class), any(UUID.class), any(Integer.class),any(Integer.class), any(Integer.class), any(Integer.class))).thenReturn(providers);
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     // WHEN
     List<Provider> providers = tourGuideService.getTripDeals(user);
@@ -183,6 +195,6 @@ public class TestTourGuideService {
     tourGuideService.tracker.stopTracking();
 
     // THEN
-    assertEquals(5, providers.size());
+    assertEquals(10, providers.size());
   }
 }

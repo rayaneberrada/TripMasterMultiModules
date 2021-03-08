@@ -15,16 +15,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import rewardCentral.RewardCentral;
-import tourGuide.beans.Attraction;
-import tourGuide.beans.Location;
-import tourGuide.beans.VisitedLocation;
-import tourGuide.beans.NearByAttraction;
+import tourGuide.beans.*;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.tracker.Tracker;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
-import tripPricer.Provider;
 import tripPricer.TripPricer;
 
 /**
@@ -39,14 +35,15 @@ public class TourGuideService {
   private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
   private final GpsService gpsService;
   private final RewardsService rewardsService;
-  private final TripPricer tripPricer = new TripPricer();
+  private final TripPricerService tripPricerService;
   public final Tracker tracker;
   boolean testMode = true;
 
   public TourGuideService(
-      GpsService gpsService, RewardsService rewardsService) {
+      GpsService gpsService, RewardsService rewardsService, TripPricerService tripPricerService) {
     this.gpsService = gpsService;
     this.rewardsService = rewardsService;
+    this.tripPricerService = tripPricerService;
 
     if (testMode) {
       logger.info("TestMode enabled");
@@ -117,7 +114,7 @@ public class TourGuideService {
     int cumulatativeRewardPoints =
         user.getUserRewards().values().stream().mapToInt(i -> i.getRewardPoints()).sum();
     List<Provider> providers =
-        tripPricer.getPrice(
+        tripPricerService.getProvidersPrice(
             tripPricerApiKey,
             user.getUserId(),
             user.getUserPreferences().getNumberOfAdults(),

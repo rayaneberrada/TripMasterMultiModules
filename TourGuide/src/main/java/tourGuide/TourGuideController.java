@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jsoniter.output.JsonStream;
 
+import tourGuide.beans.Provider;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.Location;
 import tourGuide.beans.Attraction;
 import tourGuide.proxies.GpsProxy;
 import tourGuide.service.TourGuideService;
 import tourGuide.user.User;
-import tripPricer.Provider;
 
 @RestController
 public class TourGuideController {

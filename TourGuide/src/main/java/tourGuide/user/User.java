@@ -2,8 +2,8 @@ package tourGuide.user;
 
 import java.util.*;
 
+import tourGuide.beans.Provider;
 import tourGuide.beans.VisitedLocation;
-import tripPricer.Provider;
 
 public class User {
   private final UUID userId;

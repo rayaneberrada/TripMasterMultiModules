@@ -2,8 +2,8 @@ package tourGuide.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tourGuide.beans.Provider;
 import tourGuide.proxies.TripPricerProxy;
-import tripPricer.Provider;
 
 import java.util.List;
 import java.util.UUID;

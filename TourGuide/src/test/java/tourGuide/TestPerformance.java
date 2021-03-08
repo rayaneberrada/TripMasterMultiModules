@@ -26,10 +26,7 @@ import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.proxies.RewardCentralProxy;
-import tourGuide.service.CalculatorService;
-import tourGuide.service.GpsService;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
+import tourGuide.service.*;
 import tourGuide.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,8 +34,10 @@ import tourGuide.user.User;
 public class TestPerformance {
 
   @Mock GpsService gpsService;
-  @Mock
-  CalculatorService calculatorService;
+
+  @Mock CalculatorService calculatorService;
+
+  @Mock TripPricerService tripPricerService;
 
   List<Attraction> attractions = new ArrayList();
 
@@ -90,7 +89,7 @@ public class TestPerformance {
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
     InternalTestHelper.setInternalUserNumber(100);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     List<User> allUsers = new ArrayList<>();
     List<CompletableFuture> completableFutureList = new ArrayList<>();
@@ -138,7 +137,7 @@ public class TestPerformance {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService);
+        new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     Attraction attraction = attractions.get(0);
     List<User> allUsers = new ArrayList<>();
