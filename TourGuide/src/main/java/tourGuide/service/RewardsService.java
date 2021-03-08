@@ -14,6 +14,7 @@ import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
+import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
 
@@ -26,11 +27,11 @@ public class RewardsService {
   private int proximityBuffer = defaultProximityBuffer;
   private int attractionProximityRange = 200;
   private final GpsService gpsService;
-  private final RewardCentral rewardsCentral;
+  private final RewardCentralProxy rewardCentralProxy;
 
-  public RewardsService(GpsService gpsService, RewardCentral rewardCentral) {
+  public RewardsService(GpsService gpsService, RewardCentralProxy rewardCentralProxy) {
     this.gpsService = gpsService;
-    this.rewardsCentral = rewardCentral;
+    this.rewardCentralProxy = rewardCentralProxy;
   }
 
   public void setProximityBuffer(int proximityBuffer) {
@@ -43,7 +44,7 @@ public class RewardsService {
 
   @Async
   public void calculateRewards(User user) throws ExecutionException, InterruptedException {
-    List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
+    List<VisitedLocation> userLocations = user.getVisitedLocations();
     // un array ou CopyOnWriteArrayList
     List<Attraction> attractions = gpsService.getAllAttractions();
 
@@ -81,7 +82,7 @@ public class RewardsService {
   }
 
   public int getRewardPoints(Attraction attraction, User user) {
-    return rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId());
+    return rewardCentralProxy.getRewardPoints(attraction.attractionId, user.getUserId());
   }
 
   public double getDistance(Location loc1, Location loc2) {
