@@ -9,10 +9,10 @@ import java.util.concurrent.Executors;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
-import gpsUtil.location.Location;
-import gpsUtil.location.VisitedLocation;
+import tourGuide.beans.Attraction;
+import tourGuide.beans.Location;
+import tourGuide.beans.VisitedLocation;
+import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
@@ -25,11 +25,11 @@ public class RewardsService {
   private int defaultProximityBuffer = 10;
   private int proximityBuffer = defaultProximityBuffer;
   private int attractionProximityRange = 200;
-  private final GpsUtil gpsUtil;
+  private final GpsService gpsService;
   private final RewardCentral rewardsCentral;
 
-  public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral) {
-    this.gpsUtil = gpsUtil;
+  public RewardsService(GpsService gpsService, RewardCentral rewardCentral) {
+    this.gpsService = gpsService;
     this.rewardsCentral = rewardCentral;
   }
 
@@ -45,7 +45,7 @@ public class RewardsService {
   public void calculateRewards(User user) throws ExecutionException, InterruptedException {
     List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
     // un array ou CopyOnWriteArrayList
-    List<Attraction> attractions = gpsUtil.getAttractions();
+    List<Attraction> attractions = gpsService.getAllAttractions();
 
     // Pour chaque endroit visité, on vérfie pour toutes les attractions si l'utilisateur n'a pas
     // dans sa liste de récompense déjà recu une récompense pour une attraction ayant ce nom
@@ -64,8 +64,8 @@ public class RewardsService {
             == 0) {
           if (nearAttraction(visitedLocation, attraction)) {
             user.addUserReward(
-                attraction.attractionName,
-                new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
+                    attraction.attractionName,
+                    new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
           }
         }
       }
@@ -73,11 +73,11 @@ public class RewardsService {
   }
 
   public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
-    return getDistance(attraction, location) > attractionProximityRange ? false : true;
+    return !(getDistance(attraction, location) > attractionProximityRange);
   }
 
   private boolean nearAttraction(VisitedLocation visitedLocation, Attraction attraction) {
-    return getDistance(attraction, visitedLocation.location) > proximityBuffer ? false : true;
+    return !(getDistance(attraction, visitedLocation.location) > proximityBuffer);
   }
 
   public int getRewardPoints(Attraction attraction, User user) {

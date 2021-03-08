@@ -4,8 +4,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import gpsUtil.location.Attraction;
-import gpsUtil.location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,7 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jsoniter.output.JsonStream;
 
-import gpsUtil.location.VisitedLocation;
+import tourGuide.beans.VisitedLocation;
+import tourGuide.beans.Location;
+import tourGuide.beans.Attraction;
+import tourGuide.proxies.GpsProxy;
 import tourGuide.service.TourGuideService;
 import tourGuide.user.User;
 import tripPricer.Provider;
@@ -21,7 +22,15 @@ import tripPricer.Provider;
 @RestController
 public class TourGuideController {
 
+  @Autowired
+  GpsProxy gpsProxy;
+
   @Autowired TourGuideService tourGuideService;
+
+  @RequestMapping("/getAttractions")
+  public List<Attraction> getGps() {
+    return gpsProxy.attractions();
+  }
 
   @RequestMapping("/")
   public String index() {

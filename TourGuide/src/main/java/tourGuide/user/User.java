@@ -2,7 +2,7 @@ package tourGuide.user;
 
 import java.util.*;
 
-import gpsUtil.location.VisitedLocation;
+import tourGuide.beans.VisitedLocation;
 import tripPricer.Provider;
 
 public class User {

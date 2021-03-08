@@ -17,11 +17,6 @@ public class gps {
 
     private GpsUtil gpsUtil = new GpsUtil();
 
-    @GetMapping(value = "/getGps")
-    public GpsUtil getGpsUtil() {
-        return gpsUtil;
-    }
-
     @GetMapping(value = "/getLocation/{userId}")
     public VisitedLocation getUserLocation(@PathVariable UUID userId) {
         return gpsUtil.getUserLocation(userId);

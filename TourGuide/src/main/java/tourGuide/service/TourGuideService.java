@@ -13,12 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
-import gpsUtil.location.Location;
-import gpsUtil.location.VisitedLocation;
 import rewardCentral.RewardCentral;
-import tourGuide.Entity.NearByAttraction;
+import tourGuide.beans.Attraction;
+import tourGuide.beans.Location;
+import tourGuide.beans.VisitedLocation;
+import tourGuide.beans.NearByAttraction;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.tracker.Tracker;
 import tourGuide.user.User;
@@ -36,7 +35,7 @@ import tripPricer.TripPricer;
 @Service
 public class TourGuideService {
   private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
-  private final GpsUtil gpsUtil;
+  private final GpsService gpsService;
   private final RewardsService rewardsService;
   private final RewardCentral rewardCentral;
   private final TripPricer tripPricer = new TripPricer();
@@ -44,8 +43,8 @@ public class TourGuideService {
   boolean testMode = true;
 
   public TourGuideService(
-      GpsUtil gpsUtil, RewardsService rewardsService, RewardCentral rewardCentral) {
-    this.gpsUtil = gpsUtil;
+      GpsService gpsService, RewardsService rewardsService, RewardCentral rewardCentral) {
+    this.gpsService = gpsService;
     this.rewardsService = rewardsService;
     this.rewardCentral = rewardCentral;
 
@@ -138,7 +137,7 @@ public class TourGuideService {
   @Async
   public VisitedLocation trackUserLocation(User user)
       throws ExecutionException, InterruptedException {
-    VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());
+    VisitedLocation visitedLocation = gpsService.getUserLocation(user.getUserId());
     user.addToVisitedLocations(visitedLocation);
     CompletableFuture.runAsync(
         () -> {
@@ -154,7 +153,7 @@ public class TourGuideService {
   // juste retourner les 5
   public List<NearByAttraction> getNearByAttractions(VisitedLocation visitedLocation) {
     List<NearByAttraction> nearbyAttractions = new ArrayList<>();
-    for (Attraction attraction : gpsUtil.getAttractions()) {
+    for (Attraction attraction : gpsService.getAllAttractions()) {
       double distanceToLocation = rewardsService.getDistance(attraction, visitedLocation.location);
       int reward =
           rewardCentral.getAttractionRewardPoints(attraction.attractionId, visitedLocation.userId);

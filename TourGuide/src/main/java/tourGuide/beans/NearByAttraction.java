@@ -1,7 +1,5 @@
-package tourGuide.Entity;
+package tourGuide.beans;
 
-import gpsUtil.location.Attraction;
-import gpsUtil.location.Location;
 
 public class NearByAttraction extends Attraction implements Comparable<NearByAttraction> {
     public final Location userLocation;
