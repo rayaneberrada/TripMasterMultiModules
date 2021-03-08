@@ -12,12 +12,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
-import gpsUtil.location.VisitedLocation;
 import rewardCentral.RewardCentral;
-import tourGuide.Entity.NearByAttraction;
+import tourGuide.beans.Attraction;
+import tourGuide.beans.Location;
+import tourGuide.beans.VisitedLocation;
+import tourGuide.beans.NearByAttraction;
 import tourGuide.helper.InternalTestHelper;
+import tourGuide.service.GpsService;
 import tourGuide.service.RewardsService;
 import tourGuide.service.TourGuideService;
 import tourGuide.user.User;
@@ -31,12 +32,12 @@ public class TestTourGuideService {
 
   @Test
   public void getUserLocation() throws ExecutionException, InterruptedException {
-    GpsUtil gpsUtil = new GpsUtil();
-    RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
+    GpsService gpsService = new GpsService();
+    RewardsService rewardsService = new RewardsService(gpsService, new RewardCentral());
     RewardCentral rewardCentral = new RewardCentral();
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -46,12 +47,12 @@ public class TestTourGuideService {
 
   @Test
   public void addUser() {
-    GpsUtil gpsUtil = new GpsUtil();
-    RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentral());
+    GpsService gpsService = new GpsService();
+    RewardsService rewardsService = new RewardsService(gpsService, new RewardCentral());
     RewardCentral rewardCentral = new RewardCentral();
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
@@ -70,12 +71,12 @@ public class TestTourGuideService {
 
   @Test
   public void getAllUsers() {
-    GpsUtil gpsUtil = new GpsUtil();
+    GpsService gpsService = new GpsService();
     RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsUtil, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
     InternalTestHelper.setInternalUserNumber(100);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
@@ -93,12 +94,12 @@ public class TestTourGuideService {
 
   @Test
   public void trackUser() throws ExecutionException, InterruptedException {
-    GpsUtil gpsUtil = new GpsUtil();
+    GpsService gpsService = new GpsService();
     RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsUtil, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -110,12 +111,12 @@ public class TestTourGuideService {
 
   @Test
   public void getNearbyAttractions() throws ExecutionException, InterruptedException {
-    GpsUtil gpsUtil = new GpsUtil();
+    GpsService gpsService = new GpsService();
     RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsUtil, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
@@ -129,12 +130,12 @@ public class TestTourGuideService {
 
   @Test
   public void getTripDeals() {
-    GpsUtil gpsUtil = new GpsUtil();
+    GpsService gpsService = new GpsService();
     RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsUtil, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsUtil, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService, rewardCentral);
 
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
 
