@@ -1,11 +1,13 @@
 package tourGuide.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +29,12 @@ public class RewardsService {
   private int proximityBuffer = defaultProximityBuffer;
   private int attractionProximityRange = 200;
   private final GpsService gpsService;
-  private final RewardCentralProxy rewardCentralProxy;
+  private CalculatorService calulatorService;
 
-  public RewardsService(GpsService gpsService, RewardCentralProxy rewardCentralProxy) {
+  public RewardsService(GpsService gpsService, CalculatorService calulatorService) {
+
     this.gpsService = gpsService;
-    this.rewardCentralProxy = rewardCentralProxy;
+    this.calulatorService = calulatorService;
   }
 
   public void setProximityBuffer(int proximityBuffer) {
@@ -44,7 +47,7 @@ public class RewardsService {
 
   @Async
   public void calculateRewards(User user) throws ExecutionException, InterruptedException {
-    List<VisitedLocation> userLocations = user.getVisitedLocations();
+    List<VisitedLocation> userLocations = new CopyOnWriteArrayList(user.getVisitedLocations());
     // un array ou CopyOnWriteArrayList
     List<Attraction> attractions = gpsService.getAllAttractions();
 
@@ -66,7 +69,7 @@ public class RewardsService {
           if (nearAttraction(visitedLocation, attraction)) {
             user.addUserReward(
                     attraction.attractionName,
-                    new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
+                    new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user.getUserId())));
           }
         }
       }
@@ -81,8 +84,8 @@ public class RewardsService {
     return !(getDistance(attraction, visitedLocation.location) > proximityBuffer);
   }
 
-  public int getRewardPoints(Attraction attraction, User user) {
-    return rewardCentralProxy.getRewardPoints(attraction.attractionId, user.getUserId());
+  public int getRewardPoints(Attraction attraction, UUID userId) {
+    return calulatorService.getRewardPoints(attraction, userId);
   }
 
   public double getDistance(Location loc1, Location loc2) {

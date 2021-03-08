@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import tourGuide.helper.InternalTestHelper;
+import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.tracker.Tracker;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
@@ -37,16 +39,14 @@ public class TourGuideService {
   private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
   private final GpsService gpsService;
   private final RewardsService rewardsService;
-  private final RewardCentral rewardCentral;
   private final TripPricer tripPricer = new TripPricer();
   public final Tracker tracker;
   boolean testMode = true;
 
   public TourGuideService(
-      GpsService gpsService, RewardsService rewardsService, RewardCentral rewardCentral) {
+      GpsService gpsService, RewardsService rewardsService) {
     this.gpsService = gpsService;
     this.rewardsService = rewardsService;
-    this.rewardCentral = rewardCentral;
 
     if (testMode) {
       logger.info("TestMode enabled");
@@ -156,7 +156,7 @@ public class TourGuideService {
     for (Attraction attraction : gpsService.getAllAttractions()) {
       double distanceToLocation = rewardsService.getDistance(attraction, visitedLocation.location);
       int reward =
-          rewardCentral.getAttractionRewardPoints(attraction.attractionId, visitedLocation.userId);
+          rewardsService.getRewardPoints(attraction, visitedLocation.userId);
       nearbyAttractions.add(
           new NearByAttraction(attraction, visitedLocation.location, distanceToLocation, reward));
     }

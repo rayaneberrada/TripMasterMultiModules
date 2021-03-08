@@ -25,6 +25,8 @@ import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
 import tourGuide.helper.InternalTestHelper;
+import tourGuide.proxies.RewardCentralProxy;
+import tourGuide.service.CalculatorService;
 import tourGuide.service.GpsService;
 import tourGuide.service.RewardsService;
 import tourGuide.service.TourGuideService;
@@ -35,6 +37,8 @@ import tourGuide.user.User;
 public class TestPerformance {
 
   @Mock GpsService gpsService;
+  @Mock
+  CalculatorService calculatorService;
 
   List<Attraction> attractions = new ArrayList();
 
@@ -82,12 +86,11 @@ public class TestPerformance {
   @Test
   public void highVolumeTrackLocation() throws ExecutionException, InterruptedException {
     when(gpsService.getAllAttractions()).thenReturn(attractions);
-    RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
     InternalTestHelper.setInternalUserNumber(100);
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService);
 
     List<User> allUsers = new ArrayList<>();
     List<CompletableFuture> completableFutureList = new ArrayList<>();
@@ -128,14 +131,14 @@ public class TestPerformance {
   public void highVolumeGetRewards() {
     when(gpsService.getAllAttractions()).thenReturn(attractions);
     RewardCentral rewardCentral = new RewardCentral();
-    RewardsService rewardsService = new RewardsService(gpsService, rewardCentral);
+    RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
 
     // Users should be incremented up to 100,000, and test finishes within 20 minutes
     InternalTestHelper.setInternalUserNumber(1);
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     TourGuideService tourGuideService =
-        new TourGuideService(gpsService, rewardsService, rewardCentral);
+        new TourGuideService(gpsService, rewardsService);
 
     Attraction attraction = attractions.get(0);
     List<User> allUsers = new ArrayList<>();
