@@ -3,6 +3,7 @@ package tourGuide.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tourGuide.beans.Provider;
+import tourGuide.dto.StayInformationsDto;
 import tourGuide.proxies.TripPricerProxy;
 
 import java.util.List;
@@ -14,11 +15,11 @@ public class TripPricerService {
     TripPricerProxy tripPricerProxy;
 
     public List<Provider> getProvidersPrice(String apiKey, UUID attractionId, int adults, int children, int nightsStay, int rewardsPoints){
-        return tripPricerProxy.getProvidersPrice(apiKey, attractionId, adults, children, nightsStay, rewardsPoints);
+        return tripPricerProxy.getProvidersPrice(new StayInformationsDto(apiKey, attractionId, adults, children, nightsStay, rewardsPoints));
     }
 
     public String getProviderName(String apiKey, int adults){
-        return tripPricerProxy.getProviderName(apiKey, adults);
+        return tripPricerProxy.getProviderName(new StayInformationsDto(apiKey, adults));
     }
 
 }

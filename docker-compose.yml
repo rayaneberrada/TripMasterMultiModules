@@ -1,0 +1,33 @@
+eureka-server:
+  image:  eurekaserver:0.0.1-SNAPSHOT
+  ports:
+    - 8761:8761
+gps:
+  image: gps:0.0.1-SNAPSHOT
+  links:
+    - eureka-server
+  environment:
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+
+rewardcentral:
+  image: demo:0.0.1-SNAPSHOT
+  links:
+    - eureka-server
+  environment:
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+
+trippricer:
+  image: trippricer:0.0.1-SNAPSHOT
+  links:
+    - eureka-server
+  environment:
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+
+tourguide:
+  image: tourguide:0.0.1-SNAPSHOT
+  links:
+    - eureka-server
+  environment:
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+  ports:
+    - 8080:8080

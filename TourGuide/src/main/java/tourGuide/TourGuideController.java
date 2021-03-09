@@ -16,6 +16,7 @@ import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.Location;
 import tourGuide.beans.Attraction;
 import tourGuide.proxies.GpsProxy;
+import tourGuide.service.GpsService;
 import tourGuide.service.TourGuideService;
 import tourGuide.user.User;
 
@@ -23,13 +24,13 @@ import tourGuide.user.User;
 public class TourGuideController {
 
   @Autowired
-  GpsProxy gpsProxy;
+  GpsService gpsService;
 
   @Autowired TourGuideService tourGuideService;
 
   @RequestMapping("/getAttractions")
   public List<Attraction> getGps() {
-    return gpsProxy.attractions();
+    return gpsService.getAllAttractions();
   }
 
   @RequestMapping("/")

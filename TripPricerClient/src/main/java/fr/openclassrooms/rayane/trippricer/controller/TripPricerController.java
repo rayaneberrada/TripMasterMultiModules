@@ -1,5 +1,6 @@
 package fr.openclassrooms.rayane.trippricer.controller;
 
+import fr.openclassrooms.rayane.trippricer.dto.StayInformationsDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,12 +16,12 @@ public class TripPricerController {
     private TripPricer tripPricer;
 
     @GetMapping(value = "/ProvidersPrice")
-    public List<Provider> getProvidersPrice(String apiKey, UUID attractionId, int adults, int children, int nightsStay, int rewardsPoints) {
-        return tripPricer.getPrice(apiKey, attractionId, adults, children, nightsStay, rewardsPoints);
+    public List<Provider> getProvidersPrice(StayInformationsDto stayInformations) {
+        return tripPricer.getPrice(stayInformations.apiKey, stayInformations.attractionId, stayInformations.adults, stayInformations.children, stayInformations.nightsStay, stayInformations.rewardsPoints);
     }
 
     @GetMapping(value = "/ProviderName")
-    public String getProviderName(String apiKey, int adults) {
-        return tripPricer.getProviderName(apiKey, adults);
+    public String getProviderName(StayInformationsDto stayInformations) {
+        return tripPricer.getProviderName(stayInformations.apiKey, stayInformations.adults);
     }
 }

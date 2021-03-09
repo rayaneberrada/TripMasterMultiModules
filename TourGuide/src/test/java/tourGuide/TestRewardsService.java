@@ -21,6 +21,7 @@ import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
+import tourGuide.dto.VisitedAttractionDTO;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.service.*;
 import tourGuide.user.User;
@@ -90,7 +91,7 @@ public class TestRewardsService {
   @Test
   public void nearAllAttractions() throws ExecutionException, InterruptedException {
     when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(calculatorService.getRewardPoints(any(Attraction.class), any(UUID.class))).thenReturn(1);
+    when(calculatorService.getRewardPoints(any(VisitedAttractionDTO.class))).thenReturn(1);
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     rewardsService.setProximityBuffer(Integer.MAX_VALUE);
 

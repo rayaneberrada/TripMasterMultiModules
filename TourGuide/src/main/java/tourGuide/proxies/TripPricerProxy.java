@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tourGuide.beans.Provider;
+import tourGuide.dto.StayInformationsDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,8 +14,8 @@ import java.util.UUID;
 public interface TripPricerProxy {
 
     @GetMapping(value = "/ProvidersPrice")
-    public List<Provider> getProvidersPrice(String apiKey, UUID attractionId, int adults, int children, int nightsStay, int rewardsPoints);
+    public List<Provider> getProvidersPrice(StayInformationsDto stayInformationsDto);
 
     @GetMapping(value = "/ProviderName")
-    public String getProviderName(String apiKey, int adults);
+    public String getProviderName(StayInformationsDto stayInformationsDto);
 }

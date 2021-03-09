@@ -1,5 +1,6 @@
 package fr.openclassrooms.rayane.demo.controller;
 
+import fr.openclassrooms.rayane.demo.dto.VisitedAttractionDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +12,10 @@ import java.util.UUID;
 @RequestMapping(value = "/reward")
 public class rewardController {
 
-    private RewardCentral rewardCentral;
+    private RewardCentral rewardCentral = new RewardCentral();
 
     @GetMapping(value = "/AttractionReward")
-    public int getRewardPoints(UUID attractionId, UUID userId) {
-        return rewardCentral.getAttractionRewardPoints(attractionId, userId);
+    public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO) {
+        return rewardCentral.getAttractionRewardPoints(visitedAttractionDTO.attractionId, visitedAttractionDTO.userId);
     }
 }

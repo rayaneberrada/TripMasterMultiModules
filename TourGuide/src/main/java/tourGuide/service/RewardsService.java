@@ -16,6 +16,7 @@ import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.NearByAttraction;
 import rewardCentral.RewardCentral;
+import tourGuide.dto.VisitedAttractionDTO;
 import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
@@ -85,7 +86,7 @@ public class RewardsService {
   }
 
   public int getRewardPoints(Attraction attraction, UUID userId) {
-    return calulatorService.getRewardPoints(attraction, userId);
+    return calulatorService.getRewardPoints(new VisitedAttractionDTO(attraction.attractionId, userId));
   }
 
   public double getDistance(Location loc1, Location loc2) {
