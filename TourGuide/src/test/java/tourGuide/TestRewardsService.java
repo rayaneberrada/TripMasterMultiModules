@@ -42,6 +42,7 @@ public class TestRewardsService {
   @Before
   public void setUp() {
     Locale.setDefault(new Locale("en", "US", "WIN"));
+    attractions.add(new Attraction("Disneyland", "Anaheim", "CA", 33.817595D, -117.922008D));
     attractions.add(new Attraction("Flatiron Building", "New York City", "NY", 40.741112D, -73.989723D));
     attractions.add(new Attraction("Fallingwater", "Mill Run", "PA", 39.906113D, -79.468056D));
     attractions.add(new Attraction("Union Station", "Washington D.C.", "CA", 38.897095D, -77.006332D));
@@ -60,23 +61,25 @@ public class TestRewardsService {
     attractions.add(new Attraction("Cinderella Castle", "Orlando", "FL", 28.419411D, -81.5812D));
   }
 
-  @Ignore
   @Test
   public void userGetRewards() throws ExecutionException, InterruptedException {
+    // GIVEN
+    User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
     when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
 
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
-    User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-    Attraction attraction = gpsService.getAllAttractions().get(0);
-    user.addToVisitedLocations(new VisitedLocation(user.getUserId(), attraction, new Date()));
+    // WHEN
     tourGuideService.trackUserLocation(user);
     rewardsService.calculateRewards(user);
     HashMap<String, UserReward> userRewards = user.getUserRewards();
     tourGuideService.tracker.stopTracking();
+
+    // THEN
     assertTrue(userRewards.size() == 1);
   }
 

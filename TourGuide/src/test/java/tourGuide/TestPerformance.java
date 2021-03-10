@@ -1,13 +1,11 @@
 package tourGuide;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
@@ -40,9 +38,11 @@ public class TestPerformance {
   @Mock TripPricerService tripPricerService;
 
   List<Attraction> attractions = new ArrayList();
+  Executor executor;
 
   @Before
   public void setUp() {
+//    executor = Executors.newFixedThreadPool(5);
     Locale.setDefault(new Locale("en", "US", "WIN"));
     attractions.add(new Attraction("Flatiron Building", "New York City", "NY", 40.741112D, -73.989723D));
     attractions.add(new Attraction("Fallingwater", "Mill Run", "PA", 39.906113D, -79.468056D));
@@ -84,10 +84,12 @@ public class TestPerformance {
 
   @Test
   public void highVolumeTrackLocation() throws ExecutionException, InterruptedException {
+    // GIVEN
     when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
-    InternalTestHelper.setInternalUserNumber(100);
+    InternalTestHelper.setInternalUserNumber(100000);
     TourGuideService tourGuideService =
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
@@ -95,6 +97,8 @@ public class TestPerformance {
     List<CompletableFuture> completableFutureList = new ArrayList<>();
     allUsers = tourGuideService.getAllUsers();
 
+
+    // WHEN
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     for (User user : allUsers) {
@@ -106,8 +110,7 @@ public class TestPerformance {
                 } catch (ExecutionException | InterruptedException e) {
                   e.printStackTrace();
                 }
-              },
-              Executors.newFixedThreadPool(20));
+              });
       completableFutureList.add(completableFuture);
     }
     CompletableFuture.allOf(
@@ -116,6 +119,8 @@ public class TestPerformance {
     stopWatch.stop();
     tourGuideService.tracker.stopTracking();
 
+
+    // THEN
     System.out.println(
         "highVolumeTrackLocation: Time Elapsed: "
             + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime())
@@ -126,10 +131,9 @@ public class TestPerformance {
 
   // deux options de solutions de l'erreur possible
   @Test
-  @Ignore
   public void highVolumeGetRewards() {
     when(gpsService.getAllAttractions()).thenReturn(attractions);
-    RewardCentral rewardCentral = new RewardCentral();
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
 
     // Users should be incremented up to 100,000, and test finishes within 20 minutes
@@ -143,9 +147,9 @@ public class TestPerformance {
     List<User> allUsers = new ArrayList<>();
     List<CompletableFuture> completableFutureList = new ArrayList<>();
     allUsers = tourGuideService.getAllUsers();
-    allUsers.forEach( u -> System.out.println(u));
-    System.out.println(allUsers.get(0).getVisitedLocations().isEmpty());
-    System.out.println("Taille: " + allUsers.get(0).getVisitedLocations().size());
+    allUsers.forEach(
+            u -> u.addToVisitedLocations(new VisitedLocation(u.getUserId(), attractions.get(0), new Date())));
+
     allUsers.forEach(
         u -> {
           CompletableFuture completableFuture =

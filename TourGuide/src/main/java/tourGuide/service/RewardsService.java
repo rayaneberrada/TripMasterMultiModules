@@ -1,5 +1,6 @@
 package tourGuide.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -46,9 +47,8 @@ public class RewardsService {
     proximityBuffer = defaultProximityBuffer;
   }
 
-  @Async
   public void calculateRewards(User user) throws ExecutionException, InterruptedException {
-    List<VisitedLocation> userLocations = new CopyOnWriteArrayList(user.getVisitedLocations());
+    List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
     // un array ou CopyOnWriteArrayList
     List<Attraction> attractions = gpsService.getAllAttractions();
 

@@ -131,7 +131,6 @@ public class TourGuideService {
    * @param user
    * @return the location visited
    */
-  @Async
   public VisitedLocation trackUserLocation(User user)
       throws ExecutionException, InterruptedException {
     VisitedLocation visitedLocation = gpsService.getUserLocation(user.getUserId());
