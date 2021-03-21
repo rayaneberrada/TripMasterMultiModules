@@ -1,7 +1,6 @@
 package tourGuide;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +25,7 @@ import tourGuide.dto.StayInformationsDto;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.service.*;
 import tourGuide.user.User;
+import tourGuide.user.UserPreferences;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -183,6 +183,28 @@ public class TestTourGuideService {
 
     // THEN
     assertEquals(5, attractions.size());
+  }
+
+  @Test
+  public void updatePreferences() {
+    // GIVEN
+    UserPreferences userPreferences = new UserPreferences();
+    userPreferences.setNumberOfAdults(5);
+    userPreferences.setTicketQuantity(10);
+
+    User user = new User(UUID.randomUUID(), "ray", "000", "jon@tourGuide.com");
+
+    RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
+    InternalTestHelper.setInternalUserNumber(0);
+    TourGuideService tourGuideService =
+            new TourGuideService(gpsService, rewardsService, tripPricerService);
+
+    // WHEN
+    tourGuideService.addUser(user);
+    tourGuideService.updateUserPreferences("ray", userPreferences);
+
+    // THEN
+    assertTrue(user.getUserPreferences() == userPreferences);
   }
 
   @Test

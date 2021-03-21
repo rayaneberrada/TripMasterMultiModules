@@ -5,10 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jsoniter.output.JsonStream;
 
@@ -72,9 +69,9 @@ public class TourGuideController {
     return JsonStream.serialize(tourGuideService.getNearByAttractions(visitedLocation));
   }
 
-  @RequestMapping("/updatePreferences")
-  public String updateUserPreferences(@RequestBody UserPreferences userPreferences) {
-    return null;
+  @RequestMapping("/updatePreferences/{username}")
+  public User updateUserPreferences(@PathVariable String username, @RequestBody UserPreferences userPreferences) {
+    return tourGuideService.updateUserPreferences(username, userPreferences);
   }
 
   @RequestMapping("/getRewards")

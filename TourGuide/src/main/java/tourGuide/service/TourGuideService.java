@@ -21,6 +21,7 @@ import tourGuide.helper.InternalTestHelper;
 import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.tracker.Tracker;
 import tourGuide.user.User;
+import tourGuide.user.UserPreferences;
 import tourGuide.user.UserReward;
 import tripPricer.TripPricer;
 
@@ -113,6 +114,12 @@ public class TourGuideService {
     if (!internalUserMap.containsKey(user.getUserName())) {
       internalUserMap.put(user.getUserName(), user);
     }
+  }
+
+  public User updateUserPreferences(String userName, UserPreferences userPreferences) {
+    User user = this.getUser(userName);
+    user.setUserPreferences(userPreferences);
+    return user;
   }
 
   public List<Provider> getTripDeals(User user) {
