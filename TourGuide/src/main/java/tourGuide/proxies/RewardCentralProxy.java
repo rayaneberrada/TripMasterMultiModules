@@ -11,6 +11,6 @@ import java.util.UUID;
 @RequestMapping(value = "/reward")
 public interface RewardCentralProxy {
 
-    @GetMapping(value = "/AttractionReward")
+    @RequestMapping(value = "/AttractionReward")
     public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO);
 }

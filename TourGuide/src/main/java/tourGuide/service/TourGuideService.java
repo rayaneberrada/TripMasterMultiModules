@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import rewardCentral.RewardCentral;
 import tourGuide.beans.*;
+import tourGuide.dto.StayInformationsDto;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.tracker.Tracker;
@@ -92,11 +93,15 @@ public class TourGuideService {
   public HashMap<UUID, Location> getAllUsersLocation() {
     List<User> allUsers = getAllUsers();
     HashMap<UUID, Location> currentUsersLocation = new HashMap<>();
-    allUsers.stream()
-        .map(
+    allUsers
+        .forEach(
             user ->
                 currentUsersLocation.put(user.getUserId(), user.getLastVisitedLocation().location));
     return currentUsersLocation;
+  }
+
+  public void updateUserPreferences() {
+
   }
 
   /**
@@ -115,12 +120,14 @@ public class TourGuideService {
         user.getUserRewards().values().stream().mapToInt(i -> i.getRewardPoints()).sum();
     List<Provider> providers =
         tripPricerService.getProvidersPrice(
+                new StayInformationsDto(
             tripPricerApiKey,
             user.getUserId(),
             user.getUserPreferences().getNumberOfAdults(),
             user.getUserPreferences().getNumberOfChildren(),
             user.getUserPreferences().getTripDuration(),
-            cumulatativeRewardPoints);
+            cumulatativeRewardPoints)
+        );
     user.setTripDeals(providers);
     return providers;
   }

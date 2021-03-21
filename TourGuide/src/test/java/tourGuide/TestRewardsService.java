@@ -16,6 +16,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import tourGuide.beans.Attraction;
 import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
@@ -27,15 +30,16 @@ import tourGuide.service.*;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 public class TestRewardsService {
 
-  @Mock GpsService gpsService;
+  @Autowired GpsService gpsService;
 
-  @Mock CalculatorService calculatorService;
+  @Autowired CalculatorService calculatorService;
 
-  @Mock TripPricerService tripPricerService;
+  @Autowired TripPricerService tripPricerService;
 
   List<Attraction> attractions = new ArrayList();
 
@@ -65,8 +69,9 @@ public class TestRewardsService {
   public void userGetRewards() throws ExecutionException, InterruptedException {
     // GIVEN
     User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
+    user.addToVisitedLocations(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
+    /*    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
 
     InternalTestHelper.setInternalUserNumber(0);
@@ -85,16 +90,22 @@ public class TestRewardsService {
 
   @Test
   public void isWithinAttractionProximity() {
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    //    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    // GIVEN
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
+
+    // WHEN
     Attraction attraction = gpsService.getAllAttractions().get(0);
+
+    // THEN
     assertTrue(rewardsService.isWithinAttractionProximity(attraction, attraction));
   }
 
   @Test
   public void nearAllAttractions() throws ExecutionException, InterruptedException {
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(calculatorService.getRewardPoints(any(VisitedAttractionDTO.class))).thenReturn(1);
+    /*    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(calculatorService.getRewardPoints(any(VisitedAttractionDTO.class))).thenReturn(1);*/
+    // GIVEN
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     rewardsService.setProximityBuffer(Integer.MAX_VALUE);
 
@@ -103,11 +114,14 @@ public class TestRewardsService {
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
     rewardsService.setProximityBuffer(10000);
+
+    // WHEN
     rewardsService.calculateRewards(tourGuideService.getAllUsers().get(0));
     HashMap<String, UserReward> userRewards =
         tourGuideService.getUserRewards(tourGuideService.getAllUsers().get(0));
     tourGuideService.tracker.stopTracking();
 
+    // THEN
     assertEquals(gpsService.getAllAttractions().size(), userRewards.size());
   }
 }

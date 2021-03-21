@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +16,12 @@ import tourGuide.beans.Provider;
 import tourGuide.beans.VisitedLocation;
 import tourGuide.beans.Location;
 import tourGuide.beans.Attraction;
+import tourGuide.dto.StayInformationsDto;
+import tourGuide.dto.VisitedAttractionDTO;
 import tourGuide.proxies.GpsProxy;
-import tourGuide.service.GpsService;
-import tourGuide.service.TourGuideService;
+import tourGuide.service.*;
 import tourGuide.user.User;
+import tourGuide.user.UserPreferences;
 
 @RestController
 public class TourGuideController {
@@ -26,12 +29,13 @@ public class TourGuideController {
   @Autowired
   GpsService gpsService;
 
-  @Autowired TourGuideService tourGuideService;
+  @Autowired
+  TripPricerService tripPricerService;
 
-  @RequestMapping("/getAttractions")
-  public List<Attraction> getGps() {
-    return gpsService.getAllAttractions();
-  }
+  @Autowired
+  CalculatorService calculatorService;
+
+  @Autowired TourGuideService tourGuideService;
 
   @RequestMapping("/")
   public String index() {
@@ -66,6 +70,11 @@ public class TourGuideController {
       throws ExecutionException, InterruptedException {
     VisitedLocation visitedLocation = tourGuideService.getUserLocation(getUser(userName));
     return JsonStream.serialize(tourGuideService.getNearByAttractions(visitedLocation));
+  }
+
+  @RequestMapping("/updatePreferences")
+  public String updateUserPreferences(@RequestBody UserPreferences userPreferences) {
+    return null;
   }
 
   @RequestMapping("/getRewards")
@@ -104,4 +113,37 @@ public class TourGuideController {
   private User getUser(String userName) {
     return tourGuideService.getUser(userName);
   }
+
+
+  /**************************************************************************************************
+   *
+   *  Route below are used to manually test that microservices routes are working and what they return
+   *
+   **************************************************************************************************/
+
+  @RequestMapping("/getAttractions")
+  public List<Attraction> getGps() {
+    return gpsService.getAllAttractions();
+  }
+
+  @RequestMapping("/getUserLocation")
+  public VisitedLocation getUserLocation() {
+    return gpsService.getUserLocation(UUID.randomUUID());
+  }
+
+  @RequestMapping("/ProvidersPrice")
+  public List<Provider> getProviderPrice(@RequestBody StayInformationsDto stayInformations) {
+    return tripPricerService.getProvidersPrice(stayInformations);
+  }
+
+  @RequestMapping("/ProvidersName")
+  public String getProviderName(@RequestBody StayInformationsDto stayInformations) {
+    return tripPricerService.getProviderName(stayInformations);
+  }
+
+  @RequestMapping("/AttractionReward")
+  public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO) {
+    return calculatorService.getRewardPoints(visitedAttractionDTO);
+  };
+
 }

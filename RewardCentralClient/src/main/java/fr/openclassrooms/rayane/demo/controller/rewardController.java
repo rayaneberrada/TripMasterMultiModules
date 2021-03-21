@@ -14,7 +14,7 @@ public class rewardController {
 
     private RewardCentral rewardCentral = new RewardCentral();
 
-    @GetMapping(value = "/AttractionReward")
+    @RequestMapping(value = "/AttractionReward")
     public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO) {
         return rewardCentral.getAttractionRewardPoints(visitedAttractionDTO.attractionId, visitedAttractionDTO.userId);
     }

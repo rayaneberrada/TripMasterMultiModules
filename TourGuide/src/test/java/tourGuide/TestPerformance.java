@@ -17,6 +17,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import tourGuide.beans.Attraction;
 import tourGuide.beans.Location;
 import tourGuide.beans.VisitedLocation;
@@ -27,22 +30,24 @@ import tourGuide.proxies.RewardCentralProxy;
 import tourGuide.service.*;
 import tourGuide.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 public class TestPerformance {
 
-  @Mock GpsService gpsService;
+  @Autowired
+  GpsService gpsService;
 
-  @Mock CalculatorService calculatorService;
+  @Autowired CalculatorService calculatorService;
 
-  @Mock TripPricerService tripPricerService;
+  @Autowired TripPricerService tripPricerService;
 
   List<Attraction> attractions = new ArrayList();
   Executor executor;
 
   @Before
   public void setUp() {
-//    executor = Executors.newFixedThreadPool(5);
+    //    executor = Executors.newFixedThreadPool(5);
     Locale.setDefault(new Locale("en", "US", "WIN"));
     attractions.add(new Attraction("Flatiron Building", "New York City", "NY", 40.741112D, -73.989723D));
     attractions.add(new Attraction("Fallingwater", "Mill Run", "PA", 39.906113D, -79.468056D));
@@ -85,11 +90,11 @@ public class TestPerformance {
   @Test
   public void highVolumeTrackLocation() throws ExecutionException, InterruptedException {
     // GIVEN
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));
+/*    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
-    InternalTestHelper.setInternalUserNumber(100000);
+    InternalTestHelper.setInternalUserNumber(100);
     TourGuideService tourGuideService =
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
@@ -130,14 +135,15 @@ public class TestPerformance {
   }
 
   // deux options de solutions de l'erreur possible
+
   @Test
   public void highVolumeGetRewards() {
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));
+/*    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
 
     // Users should be incremented up to 100,000, and test finishes within 20 minutes
-    InternalTestHelper.setInternalUserNumber(1);
+    InternalTestHelper.setInternalUserNumber(100);
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     TourGuideService tourGuideService =

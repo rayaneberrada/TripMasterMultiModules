@@ -17,23 +17,28 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import rewardCentral.RewardCentral;
 import tourGuide.beans.*;
+import tourGuide.dto.StayInformationsDto;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.service.*;
 import tourGuide.user.User;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 public class TestTourGuideService {
 
-  @Mock
+  @Autowired
   GpsService gpsService;
 
-  @Mock
+  @Autowired
   CalculatorService calculatorService;
 
-  @Mock
+  @Autowired
   TripPricerService tripPricerService;
 
   User user;
@@ -79,7 +84,7 @@ public class TestTourGuideService {
   @Test
   public void getUserLocation() throws ExecutionException, InterruptedException {
     // GIVEN
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
+//    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
@@ -145,7 +150,7 @@ public class TestTourGuideService {
   @Test
   public void trackUser() throws ExecutionException, InterruptedException {
     // GIVEN
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
+    //    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
@@ -163,8 +168,8 @@ public class TestTourGuideService {
   @Test
   public void getNearbyAttractions() throws ExecutionException, InterruptedException {
     // GIVEN
-    when(gpsService.getAllAttractions()).thenReturn(attractions);
-    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));
+    /*    when(gpsService.getAllAttractions()).thenReturn(attractions);
+    when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(user.getUserId(), attractions.get(0), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
@@ -183,7 +188,7 @@ public class TestTourGuideService {
   @Test
   public void getTripDeals() {
     // GIVEN
-    when(tripPricerService.getProvidersPrice(any(String.class), any(UUID.class), any(Integer.class),any(Integer.class), any(Integer.class), any(Integer.class))).thenReturn(providers);
+    //    when(tripPricerService.getProvidersPrice(any(StayInformationsDto.class))).thenReturn(providers);
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     InternalTestHelper.setInternalUserNumber(0);
     TourGuideService tourGuideService =
@@ -191,10 +196,25 @@ public class TestTourGuideService {
 
     // WHEN
     List<Provider> providers = tourGuideService.getTripDeals(user);
-
     tourGuideService.tracker.stopTracking();
 
     // THEN
-    assertEquals(10, providers.size());
+    assertEquals(5, providers.size());
+  }
+
+  @Test
+  public void getAllUsersLocation() {
+    // GIVEN
+    InternalTestHelper.setInternalUserNumber(20);
+    RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
+    TourGuideService tourGuideService =
+            new TourGuideService(gpsService, rewardsService, tripPricerService);
+
+    // WHEN
+    HashMap<UUID, Location> usersLocation = tourGuideService.getAllUsersLocation();
+    tourGuideService.tracker.stopTracking();
+
+    // THEN
+    assertEquals(20, usersLocation.size());
   }
 }

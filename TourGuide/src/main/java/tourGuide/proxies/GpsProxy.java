@@ -14,9 +14,9 @@ import java.util.UUID;
 @RequestMapping(value = "/gps")
 public interface GpsProxy {
 
-    @GetMapping(value = "/getAttractions")
-    public List<Attraction> attractions();
+    @RequestMapping(value = "/getAttractions")
+    List<Attraction> attractions();
 
-    @GetMapping(value = "/getLocation/{userId}")
+    @RequestMapping(value = "/getLocation/{userId}")
     public VisitedLocation getUserLocation(@PathVariable("userId") UUID userId);
 }

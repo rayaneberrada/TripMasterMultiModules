@@ -18,13 +18,15 @@ public class gps {
 
     private GpsUtil gpsUtil = new GpsUtil();
 
+    @GetMapping(value = "/getAttractions")
+    List<Attraction> attractions() {
+        return gpsUtil.getAttractions();
+    }
+
     @GetMapping(value = "/getLocation/{userId}")
     public VisitedLocation getUserLocation(@PathVariable UUID userId) {
         return gpsUtil.getUserLocation(userId);
     }
 
-    @GetMapping(value = "/getAttractions")
-    public List<Attraction> attractions() {
-        return gpsUtil.getAttractions();
-    }
+
 }

@@ -14,12 +14,12 @@ public class TripPricerService {
     @Autowired
     TripPricerProxy tripPricerProxy;
 
-    public List<Provider> getProvidersPrice(String apiKey, UUID attractionId, int adults, int children, int nightsStay, int rewardsPoints){
-        return tripPricerProxy.getProvidersPrice(new StayInformationsDto(apiKey, attractionId, adults, children, nightsStay, rewardsPoints));
+    public List<Provider> getProvidersPrice(StayInformationsDto stayInformationsDto){
+        return tripPricerProxy.getProvidersPrice(stayInformationsDto);
     }
 
-    public String getProviderName(String apiKey, int adults){
-        return tripPricerProxy.getProviderName(new StayInformationsDto(apiKey, adults));
+    public String getProviderName(StayInformationsDto stayInformationsDto){
+        return tripPricerProxy.getProviderName(stayInformationsDto);
     }
 
 }
