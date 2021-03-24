@@ -47,7 +47,7 @@ public class TestPerformance {
 
   @Before
   public void setUp() {
-    //    executor = Executors.newFixedThreadPool(5);
+    executor = Executors.newFixedThreadPool(100);
     Locale.setDefault(new Locale("en", "US", "WIN"));
     attractions.add(new Attraction("Flatiron Building", "New York City", "NY", 40.741112D, -73.989723D));
     attractions.add(new Attraction("Fallingwater", "Mill Run", "PA", 39.906113D, -79.468056D));
@@ -94,7 +94,7 @@ public class TestPerformance {
     when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
-    InternalTestHelper.setInternalUserNumber(100);
+    InternalTestHelper.setInternalUserNumber(100000);
     TourGuideService tourGuideService =
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
@@ -115,7 +115,7 @@ public class TestPerformance {
                 } catch (ExecutionException | InterruptedException e) {
                   e.printStackTrace();
                 }
-              });
+              }, executor);
       completableFutureList.add(completableFuture);
     }
     CompletableFuture.allOf(
@@ -166,8 +166,7 @@ public class TestPerformance {
                     } catch (ExecutionException | InterruptedException e) {
                       e.printStackTrace();
                     }
-                  },
-                  Executors.newFixedThreadPool(20));
+                  }, executor);
           completableFutureList.add(completableFuture);
         });
     System.out.println("Taille: " + allUsers.get(0).getVisitedLocations().size());
