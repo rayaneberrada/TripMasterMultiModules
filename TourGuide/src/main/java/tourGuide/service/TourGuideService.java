@@ -67,7 +67,6 @@ public class TourGuideService {
    * @param user
    * @return User Visited location object
    */
-  @Async
   public VisitedLocation getUserLocation(User user)
       throws ExecutionException, InterruptedException {
     VisitedLocation visitedLocation =
@@ -78,7 +77,7 @@ public class TourGuideService {
   }
 
   /**
-   * Retrieve a use in the internalUserMap by it's name
+   * Retrieve a user in the internalUserMap by it's name
    *
    * @param userName
    * @return the User matching the param userName
@@ -122,6 +121,12 @@ public class TourGuideService {
     return user;
   }
 
+  /**
+   * Method to get the prices of the travel agencies
+   *
+   * @param user
+   * @return a list of all providers
+   */
   public List<Provider> getTripDeals(User user) {
     int cumulatativeRewardPoints =
         user.getUserRewards().values().stream().mapToInt(i -> i.getRewardPoints()).sum();
@@ -160,7 +165,12 @@ public class TourGuideService {
     return visitedLocation;
   }
 
-  // juste retourner les 5
+  /**
+   * Method to get the 5 nearest attraction of a user
+   *
+   * @param visitedLocation
+   * @return a list 5 NearByAttraction objects
+   */
   public List<NearByAttraction> getNearByAttractions(VisitedLocation visitedLocation) {
     List<NearByAttraction> nearbyAttractions = new ArrayList<>();
     for (Attraction attraction : gpsService.getAllAttractions()) {

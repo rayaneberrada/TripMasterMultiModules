@@ -1,5 +1,8 @@
 package tourGuide.helper;
 
+/**
+ * InternaleTestHelper will set the amount of user available to test the app
+ */
 public class InternalTestHelper {
 
 	// Set this default up to 100,000 for testing

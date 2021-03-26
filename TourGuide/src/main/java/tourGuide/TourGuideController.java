@@ -15,6 +15,7 @@ import tourGuide.beans.Location;
 import tourGuide.beans.Attraction;
 import tourGuide.dto.StayInformationsDto;
 import tourGuide.dto.VisitedAttractionDTO;
+import tourGuide.helper.InternalTestHelper;
 import tourGuide.proxies.GpsProxy;
 import tourGuide.service.*;
 import tourGuide.user.User;
@@ -69,19 +70,44 @@ public class TourGuideController {
     return JsonStream.serialize(tourGuideService.getNearByAttractions(visitedLocation));
   }
 
-  @RequestMapping("/updatePreferences/{username}")
-  public User updateUserPreferences(@PathVariable String username, @RequestBody UserPreferences userPreferences) {
-    return tourGuideService.updateUserPreferences(username, userPreferences);
+  /**
+   * Route to replace the preferences of a user by new values
+   *
+   * @param userName
+   * @param ticketQuantity
+   * @param stayInformationsDto
+   * @return
+   */
+  @RequestMapping("/updatePreferences")
+  public UserPreferences updateUserPreferences(@RequestParam String userName, @RequestParam int ticketQuantity, @RequestBody StayInformationsDto stayInformationsDto) {
+    UserPreferences userPreferences = new UserPreferences();
+
+    userPreferences.setTicketQuantity(ticketQuantity);
+    userPreferences.setNumberOfAdults(stayInformationsDto.adults);
+    userPreferences.setNumberOfChildren(stayInformationsDto.children);
+    userPreferences.setTripDuration(stayInformationsDto.nightsStay);
+
+    return tourGuideService.updateUserPreferences(userName, userPreferences).getUserPreferences();
   }
 
+  /**
+   * Route to calculate the reward points of a user
+   *
+   * @param userName
+   * @return
+   */
   @RequestMapping("/getRewards")
   public String getRewards(@RequestParam String userName) {
     return JsonStream.serialize(tourGuideService.getUserRewards(getUser(userName)));
   }
 
+  /**
+   * Route to get the current location of all users
+   *
+   * @return
+   */
   @RequestMapping("/getAllCurrentLocations")
-  public String getAllCurrentLocations() {
-    HashMap<UUID, Location> currentUsersLocation = tourGuideService.getAllUsersLocation();
+  public HashMap<UUID, Location> getAllCurrentLocations() {
     // TODO: Get a list of every user's most recent location as JSON
     // - Note: does not use gpsUtil to query for their current location,
     //        but rather gathers the user's current location from their stored location history.
@@ -92,7 +118,7 @@ public class TourGuideController {
     //        ...
     //     }
 
-    return JsonStream.serialize(currentUsersLocation);
+    return tourGuideService.getAllUsersLocation();
   }
 
   /**
@@ -114,7 +140,7 @@ public class TourGuideController {
 
   /**************************************************************************************************
    *
-   *  Route below are used to manually test that microservices routes are working and what they return
+   *  Route below are used to manually test that microservices routes are working properly
    *
    **************************************************************************************************/
 

@@ -12,14 +12,29 @@ import tourGuide.dto.StayInformationsDto;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Feign proxy used to communicate and redirect requests to the TripPricerClient microservice
+ */
 @FeignClient("tripPricer")
 @RequestMapping(value = "/trip")
 public interface TripPricerProxy {
 
+    /**
+     * Route calculating the prices of the travel agencies depending of the staying options chosen by the user
+     *
+     * @param stayInformationsDto
+     * @return list of Provider with their prices
+     */
     @RequestMapping(value = "/ProvidersPrice")
     @Headers("Content-Type: application/json")
-    public List<Provider> getProvidersPrice(@RequestBody StayInformationsDto stayInformationsDto);
+    List<Provider> getProvidersPrice(@RequestBody StayInformationsDto stayInformationsDto);
 
+    /**
+     *  Route to get the name of a provider
+     *
+     * @param stayInformationsDto
+     * @return a random provider's name
+     */
     @RequestMapping(value = "/ProviderName")
-    public String getProviderName(StayInformationsDto stayInformationsDto);
+    String getProviderName(StayInformationsDto stayInformationsDto);
 }

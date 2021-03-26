@@ -3,23 +3,27 @@ package tourGuide.user;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.javamoney.moneta.Money;
 
 /**
  * Class storing default user preferences
  */
 public class UserPreferences {
-	
+
+	@JsonIgnore
 	private int attractionProximity = Integer.MAX_VALUE;
+	@JsonIgnore
 	private CurrencyUnit currency = Monetary.getCurrency("USD");
+	@JsonIgnore
 	private Money lowerPricePoint = Money.of(0, currency);
+	@JsonIgnore
 	private Money highPricePoint = Money.of(Integer.MAX_VALUE, currency);
 	private int tripDuration = 1;
 	private int ticketQuantity = 1;
 	private int numberOfAdults = 1;
 	private int numberOfChildren = 0;
 
-	// Remplacer par lombok getter et setter pour nettoyer
 	public UserPreferences() {
 	}
 

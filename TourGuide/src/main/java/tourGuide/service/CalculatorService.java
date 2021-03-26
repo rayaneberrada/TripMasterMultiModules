@@ -14,6 +14,13 @@ public class CalculatorService {
     @Autowired
     RewardCentralProxy rewardCentralProxy;
 
+    /**
+     * Method to calculate a user reward for visiting an Attraction by calling the RewardCentralClient
+     * microservice through the rewardCentralProxy
+     *
+     * @param visitedAttractionDTO
+     * @return the amount of points earned by the user
+     */
     public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO) {
         return rewardCentralProxy.getRewardPoints(visitedAttractionDTO);
     }

@@ -7,10 +7,19 @@ import tourGuide.dto.VisitedAttractionDTO;
 
 import java.util.UUID;
 
+/**
+ * Feign proxy used to communicate and redirect requests to the RewardCentralCLient microservice
+ */
 @FeignClient("rewardCentral")
 @RequestMapping(value = "/reward")
 public interface RewardCentralProxy {
 
+    /**
+     * Route to calculate the reward for an attraction visited by a user
+     *
+     * @param visitedAttractionDTO
+     * @return int representing the amount of points earned by the user
+     */
     @RequestMapping(value = "/AttractionReward")
-    public int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO);
+    int getRewardPoints(VisitedAttractionDTO visitedAttractionDTO);
 }

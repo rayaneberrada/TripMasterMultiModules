@@ -39,6 +39,11 @@ public class RewardsService {
     this.calulatorService = calulatorService;
   }
 
+  /**
+   * Method to define when we consider an Attraction to be close
+   *
+   * @param proximityBuffer
+   */
   public void setProximityBuffer(int proximityBuffer) {
     this.proximityBuffer = proximityBuffer;
   }
@@ -47,6 +52,13 @@ public class RewardsService {
     proximityBuffer = defaultProximityBuffer;
   }
 
+  /**
+   * Method to calculate the rewards of a user
+   *
+   * @param user
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
   public void calculateRewards(User user) throws ExecutionException, InterruptedException {
     List<VisitedLocation> userLocations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
     // un array ou CopyOnWriteArrayList
@@ -58,9 +70,6 @@ public class RewardsService {
     // utilisant nearAttraction()
     // Si c'est le cas, on ajoute une récompense à la lsite de l'utilisateur qu'on calcule en
     // utilisant RewardCentral
-    // SOlution 1: Calculer la récompense à l'avance pour toues les attractions?
-    // Solution 2: lancer une tache asynchrone qui va calculer rewards et la modifier dans
-    // l'utilisateur
     for (VisitedLocation visitedLocation : userLocations) {
       for (Attraction attraction : attractions) {
         if (user.getUserRewards().values().stream()

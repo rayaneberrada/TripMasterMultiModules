@@ -94,7 +94,6 @@ public class TestPerformance {
     when(gpsService.getUserLocation(any(UUID.class))).thenReturn(new VisitedLocation(UUID.randomUUID(), new Location(10.00, 10.00), new Date()));*/
     RewardsService rewardsService = new RewardsService(gpsService, calculatorService);
     // Users should be incremented up to 100,000, and test finishes within 15 minutes
-    InternalTestHelper.setInternalUserNumber(100000);
     TourGuideService tourGuideService =
         new TourGuideService(gpsService, rewardsService, tripPricerService);
 
